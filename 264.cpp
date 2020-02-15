@@ -1,48 +1,91 @@
-/* o(n) ----单调栈维护ｎ个元素　　每个循环ｏ(n)  3  O(n)
- 　　维护单调递增
- */
+/*************************************************
+        &Author:     
+        &E-mail: 878491983@qq.com
+        &Motto: Believe in yourself.
+        &File Name: 264.cpp
+        &Created Time: 19Century 2019年08月09日 星期五 21时36分15秒 
+                           CST  Day/221 and Week/31 of this year
+        &Description:
 
-#include <iostream>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <stack>
-using namespace std;
-#define MAX_N 100000
 
-long long arr[MAX_N + 5];
-long long l[MAX_N + 5], r[MAX_N + 5];
-
-int main() {
-    int n;
-
-    stack<int> s;//声明了1个存储int型元素的栈，栈名是s。
-
-    cin >> n;
-    arr[0] = arr[n + 1] = -1;//添加收尾
-    for (int i = 1; i <= n; i++) cin >> arr[i];
-	//------------zuo
-    s.push(0);
-    for (int i = 1; i <= n; i++) {
-        while (arr[s.top()] >= arr[i]) s.pop();
-        l[i] = i - s.top();//zuoqie
-        s.push(i);
-    }
-	//-------------qingkong zhan
-    while (!s.empty()) s.pop();
-	//------------you
-    s.push(n + 1);
-    for (int i = n; i >= 1; i--) {
-        while (arr[s.top()] >= arr[i]) s.pop();
-        r[i] = s.top() - i;//youqie
-        s.push(i);
-    }
-//-----------
-    long long ans = 0;
-    for (int i = 1; i <= n; i++) {
-        ans = max(ans, arr[i] * (r[i] + l[i] - 1));//  ====
-    }
-    cout << ans << endl;
-    return 0;
+ ************************************************/
+#define swap(a, b) { \
+    __typeof(a) __temp = a; \
+    a = b, b = __temp; \
 }
 
+typedef struct Heap {
+    long long *data;
+    int n, size;
+} Heap;
+
+Heap *init(int n) {
+    Heap *h = (Heap *)malloc(sizeof(Heap));
+    h->n = 0;
+    h->size = n + 1;
+    h->data = (long long *)malloc(sizeof(long long) * h->size);
+    return h;
+}
+
+int empty(Heap *h) {
+    return h->n == 0;
+}
+
+#define V(x) h->data[x]
+
+void push(Heap *h, long long val) {
+    h->data[++(h->n)] = val;
+    int ind = h->n;
+    while (ind > 1 && V(ind) < V(ind >> 1)) {
+        swap(V(ind), V(ind >> 1));
+        ind >>= 1;
+    }
+    return ;
+}
+
+long long top(Heap *h) { return V(1); }
+
+void pop(Heap *h) {
+    if (empty(h)) return ;
+    V(1) = V(h->n);
+    (h->n)--;
+    int ind = 1;
+    while ((ind << 1) <= h->n) {
+        int temp = ind, l = ind << 1, r = ind << 1 | 1;
+        if (V(l) < V(temp)) temp = l;
+        if (r <= h->n && V(r) < V(temp)) temp = r;
+        if (temp == ind) break;
+        swap(V(ind), V(temp));
+        ind = temp;
+    }
+    return ;
+}
+
+void clear(Heap *h) {
+    if (h == NULL) return ;
+    free(h->data);
+    free(h);
+    return ;
+}
+
+int nthUglyNumber(int n){
+    Heap *h = init(3 * n);
+    push(h, 1);
+    long long ans = 0;
+    while (n--) {
+        ans = top(h);
+        pop(h);
+        if (ans % 5 == 0) {
+            push(h, 5 * ans);
+        } else if (ans % 3 == 0) {
+            push(h, 3 * ans);
+            push(h, 5 * ans);
+        } else {
+            push(h, 2 * ans);
+            push(h, 3 * ans);
+            push(h, 5 * ans);
+        }
+    }
+    clear(h);
+    return ans;
+}

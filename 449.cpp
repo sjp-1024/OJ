@@ -1,52 +1,67 @@
 /***********************************************************
-*       &Author: ShijinPeng     
-*       &E-mail: 878491983@qq.com
+*       &Author: Shi Jinpeng     
+*       &E-mail: shi_jinpeng@foxmail.com
 *       &Motto: Believe in yourself.
 *       &File Name: 449.cpp
-*       &Created Time: 19Century 2019年08月16日 星期五 21时44分31秒 
-*                          CST  Day/228 and Week/32 of this year
+*       &Created Time: 20Century 2020年01月10日 星期五 22时56分28秒 
+*                          CST  Day/010 and Week/01 of this year
 *       &Description:
-*       题目描述
-​ 输入正整数n，输出杨辉三角的前n行。例如，n=5时，杨辉三角形如下：
-1
-1 1
-1 2 1
-1 3 3 1
-1 4 6 4 1
-输入
-​ 一行一个正整数n，1≤ n≤ 20。
-输出
-​ 共n行， 第i行包含i个正整数，之间用一个空格隔开。
-样例输入
-5
-样例输出
-1
-1 1
-1 2 1
-1 3 3 1
-1 4 6 4 1
 ***********************************************************/
 
-#include<iostream>
-using namespace std;
-int main(){
-    int n;
-    int i,j,a[21][21]={0};
-    while(n<1 || n>20){
-        scanf("%d",&n);
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Codec {
+public:
+
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        string res;
+        dfs_s(root,res);
+        return res;
     }
-    for(int i=0;i<n;i++){
-        a[i][0]=1;
+    void dfs_s(TreeNode* root, string& res){
+        if(!root){
+            res+="null ";
+            return ;
+        }
+        res+=to_string(root->val)+' ';
+        dfs_s(root->left,res);
+        dfs_s(root->right,res);
     }
-    for(int i=1;i<n;i++){
-        for(int j=1;j<=n;j++)
-        a[i][j]=a[i-1][j-1]+a[i-1][j];
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        int u=0;
+        return dfs_t(data, u);
     }
-    for(int i=0;i<n;i++){
-        printf("1");
-        for(int j=1;j<=i;j++)
-        printf( " %d",a[i][j]);
-        printf("\n");
+    TreeNode* dfs_t(string data, int& u){
+        if(u==data.size())return NULL;
+        int k=u;
+        while(data[k]!=' ')k++;
+        if(data[u]=='n'){
+            u=k+1;
+            return NULL;
+        }
+        int m=1,val=0;
+        if(u<k&&data[u]=='-')m=-1,u++;
+        for(int i=u;i<k;i++)val=val*10+data[i]-'0';
+        val*=m;
+        u=k+1;
+        auto root=new TreeNode(val);
+        root->left=dfs_t(data,u);
+        root->right=dfs_t(data,u);
+        return root;
     }
-    return 0;
-}
+};
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec;
+// codec.deserialize(codec.serialize(root));

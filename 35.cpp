@@ -3,23 +3,28 @@
 *       &E-mail: shi_jinpeng@foxmail.com
 *       &Motto: Believe in yourself.
 *       &File Name: 35.cpp
-*       &Created Time: 19Century 2019年12月06日 星期五 18时12分33秒 
-*                          CST  Day/340 and Week/48 of this year
+*       &Created Time: 20Century 2020年02月04日 星期二 15时24分44秒 
+*                          CST  Day/035 and Week/05 of this year
 *       &Description:
 ***********************************************************/
 
 
 #include <iostream>
 using namespace std;
-int main() {
-    int a, b;
-    int x;
-    cin >> a >> b;
-    if (a > 0 && b > 0) x = a;
-    if (a < 0) x = 0;
-    if (a>b || a==b) cout << "ERROR"<<endl;
-    for (int i = x; i<= b; i++) {
-        cout << i<< endl;
-    }
+#include <bits/stdc++.h>
+class Solution {
+    public:
+    int searchInsert(vector<int>& nums, int target) {
+        int min = 0;
+        int end = sizeof(nums) - 1;
+        while (min <= end) {
+            int mid = (min + end) >> 1;
+            if (nums[mid] == target) return mid;
+            if (nums [mid] > target) end = mid - 1;
+            else min =mid + 1;
+        }
+        //if (target <= nums[min]) return min;
+        //else if (target <= nums[end]) return end;
         return 0;
-}
+    }
+};
